@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Service {
+  id               Int           @id @default(autoincrement())
+  slug             String        @unique
+  name             String
+  emoji            String
+  color            String
+  shortDescription String
+  description      String
+  benefits         String // lista separada por "|"
+  ageRange         String
+  durationMin      Int
+  priceFrom        Int
+  order            Int           @default(0)
+  active           Boolean       @default(true)
+  appointments     Appointment[]
+}
+
+model Appointment {
+  id         Int      @id @default(autoincrement())
+  code       String   @unique
+  service    Service  @relation(fields: [serviceId], references: [id])
+  serviceId  Int
+  date       String // YYYY-MM-DD
+  time       String // HH:mm
+  parentName String
+  phone      String
+  email      String
+  childName  String
+  childAge   Int
+  notes      String?
+  status     String   @default("PENDIENTE") // PENDIENTE | CONFIRMADA | COMPLETADA | CANCELADA
+  createdAt  DateTime @default(now())
+
+  @@index([date])
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  subject   String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Post {
+  id          Int      @id @default(autoincrement())
+  slug        String   @unique
+  title       String
+  excerpt     String
+  content     String
+  category    String
+  emoji       String
+  color       String
+  readMinutes Int      @default(3)
+  published   Boolean  @default(true)
+  views       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Testimonial {
+  id         Int      @id @default(autoincrement())
+  parentName String
+  childName  String?
+  rating     Int
+  comment    String
+  approved   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+model GalleryCase {
+  id          Int    @id @default(autoincrement())
+  title       String
+  treatment   String
+  childAge    Int
+  duration    String
+  description String
+  before      String // variante de la ilustración: caries | crowded | gap | stain | crossbite
+  after       String // healthy | aligned | sealed
+  order       Int    @default(0)
+}
